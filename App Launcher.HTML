@@ -1,1 +1,545 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qoyod Apps Launcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f7fb; --surface:#ffffff; --surface-2:#f8fafc; --border:#e3e8f0; --border-strong:#cfd8e6;
+  --text:#14204a; --text-2:#5b6683; --text-3:#8a94ad;
+  --brand:#0a6cf0; --brand-2:#3cc8e8; --brand-ink:#ffffff; --navy:#1b2a6b;
+  --ok:#14b8a6; --ok-bg:#e6f8f6; --shadow:0 1px 2px rgba(20,32,74,.06),0 4px 16px rgba(20,32,74,.05);
+  --tile-shadow:0 6px 16px -6px rgba(20,32,74,.35);
+  --lock-bg:#eef1f6; --lock-ink:#9aa3b8; --overlay:rgba(12,20,48,.45);
+  --radius:16px;
+}
+:root[data-theme="dark"]{
+  --bg:#0b1430; --surface:#121d3f; --surface-2:#0f1936; --border:#22305c; --border-strong:#2e3e70;
+  --text:#eef2ff; --text-2:#a9b4d6; --text-3:#7482ad;
+  --brand:#3d8bff; --brand-2:#3cc8e8; --navy:#dfe6ff;
+  --ok:#2dd4bf; --ok-bg:rgba(45,212,191,.12); --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  --tile-shadow:0 8px 20px -8px rgba(0,0,0,.7);
+  --lock-bg:#1a2550; --lock-ink:#5d6b98; --overlay:rgba(3,8,24,.65);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:"IBM Plex Sans","IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+:root[lang="ar"] body{font-family:"IBM Plex Sans Arabic","IBM Plex Sans",system-ui,Tahoma,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+svg{display:block}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
 
+/* Top bar */
+.topbar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border)}
+.topbar .wrap{display:flex;align-items:center;gap:12px;height:64px}
+.logo{font-weight:800;font-size:22px;letter-spacing:.5px;color:var(--navy);display:flex;align-items:center;gap:2px;white-space:nowrap}
+.logo .dot{width:6px;height:6px;border-radius:50%;background:var(--brand-2);display:inline-block;margin-top:14px}
+.searchbtn{flex:1;max-width:420px;margin-inline-start:auto;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);color:var(--text-3);text-align:start}
+.searchbtn span:not(.kbd){flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kbd{font-size:11px;border:1px solid var(--border-strong);border-radius:6px;padding:1px 6px;color:var(--text-3);background:var(--surface)}
+.iconbtn{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center;font-weight:600;color:var(--text);flex:none}
+.iconbtn:hover,.searchbtn:hover{border-color:var(--border-strong)}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--navy);color:var(--surface);display:grid;place-items:center;font-weight:700;font-size:13px;border:2px solid var(--brand-2);flex:none}
+:root[data-theme="dark"] .avatar{background:#2a3a78;color:#fff}
+
+/* Welcome */
+.welcome{margin-top:28px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 28px;display:flex;align-items:center;gap:18px;position:relative;overflow:hidden}
+.welcome::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+.welcome .badge{width:52px;height:52px;border-radius:14px;background:#1b2a6b;display:grid;place-items:center;color:var(--brand-2);flex:none;box-shadow:0 8px 18px -6px rgba(27,42,107,.6)}
+.welcome .date{color:var(--brand);font-size:13px;font-weight:500}
+.welcome h1{margin:2px 0;font-size:26px;line-height:1.2;color:var(--navy)}
+.welcome .who{color:var(--text-2);font-size:13px}
+.welcome .who b{color:var(--text);font-weight:600}
+.tfa{margin-inline-start:auto;border:1px solid var(--border);background:var(--surface-2);border-radius:12px;padding:10px 14px;font-size:12px;color:var(--text-3)}
+.tfa a{display:block;color:var(--brand);font-weight:600;font-size:13px;text-decoration:none;margin-top:2px}
+
+/* Section titles */
+.sec-title{display:flex;align-items:center;gap:10px;margin:36px 0 14px;font-size:18px;font-weight:600;color:var(--navy)}
+.sec-title::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--brand-2)}
+.sec-title.alt::before{background:var(--brand)}
+.count{font-size:12px;font-weight:600;color:var(--text-2);background:var(--lock-bg);border-radius:999px;padding:1px 8px}
+.sec-sub{color:var(--text-3);font-size:13px;font-weight:400;margin-inline-start:auto}
+
+/* Quick access */
+.quick{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;display:grid;gap:12px}
+.quick-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.quick-label{font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;width:72px;flex:none}
+:root[lang="ar"] .quick-label{letter-spacing:0}
+.chip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px 0 6px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);font-size:13px;font-weight:500}
+.chip:hover{border-color:var(--border-strong);background:var(--surface)}
+.chip .mini{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;color:#fff}
+.chip .mini svg{width:14px;height:14px}
+.chip small{color:var(--text-3);font-weight:400}
+.empty{color:var(--text-3);font-size:13px}
+
+/* Product sections */
+.product{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.p-head{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.p-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:20px;color:var(--pc);white-space:nowrap}
+.p-logo .mark{width:32px;height:32px;border-radius:50%;border:5px solid var(--pc);position:relative;flex:none}
+.p-logo .mark::after{content:"";position:absolute;width:7px;height:7px;border-radius:2px;background:var(--pacc,var(--brand-2));inset-inline-end:-6px;bottom:-6px}
+:root[data-theme="dark"] .p-logo{color:var(--pc-dark,var(--pc))}
+:root[data-theme="dark"] .p-logo .mark{border-color:var(--pc-dark,var(--pc))}
+.p-meta{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.p-meta .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ok);background:var(--ok-bg);border-radius:999px;padding:2px 9px}
+.status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.status.off{color:var(--text-2);background:var(--lock-bg)}
+.p-desc{color:var(--text-2);font-size:13px}
+.p-actions{display:flex;align-items:center;gap:10px;margin-inline-start:auto}
+.last{color:var(--text-3);font-size:12px;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 16px;border-radius:10px;border:1px solid transparent;font-weight:600;font-size:13px;white-space:nowrap}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-ghost{background:var(--surface);border-color:var(--border);color:var(--brand)}
+.btn-ghost:hover{border-color:var(--brand)}
+.btn svg{width:16px;height:16px}
+:root[dir="rtl"] .flip{transform:scaleX(-1)}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;padding:18px 14px 20px}
+.tile{position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 6px;border-radius:14px;border:0;background:transparent;text-align:center}
+.tile:hover{background:var(--surface-2)}
+.tile:focus-visible,.chip:focus-visible,.btn:focus-visible,.iconbtn:focus-visible,.searchbtn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.tile .ic{width:60px;height:60px;border-radius:16px;display:grid;place-items:center;color:#fff;box-shadow:var(--tile-shadow);transition:transform .15s}
+.tile:hover .ic{transform:translateY(-2px)}
+.tile .ic svg{width:28px;height:28px}
+.tile .nm{font-size:13px;font-weight:600;line-height:1.25;color:var(--text)}
+.pin{position:absolute;top:4px;inset-inline-end:8px;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:var(--text-3);background:var(--surface);border:1px solid var(--border);opacity:0;transition:opacity .15s}
+.tile-wrap:hover .pin,.tile-wrap:focus-within .pin,.pin.on{opacity:1}
+@media (hover:none){.pin{opacity:1}}
+.pin.on{color:#f5a524;border-color:#f5d48a}
+.pin svg{width:14px;height:14px}
+.locked .tile .ic{background:var(--lock-bg)!important;color:var(--lock-ink);box-shadow:none}
+.locked .tile .nm{color:var(--text-3);font-weight:500}
+.locked .tile .lk{position:absolute;top:8px;inset-inline-end:calc(50% - 38px);width:20px;height:20px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-3)}
+.locked .tile .lk svg{width:11px;height:11px}
+/* Grouped modules (QEnterprise) */
+.groups{display:flex;flex-wrap:wrap;gap:12px;padding:18px 16px 20px}
+.group{flex:1 1 auto;border:1px solid var(--border);border-radius:14px;background:var(--surface-2);padding:12px 8px 6px}
+.group h3{margin:0 8px 6px;font-size:12px;font-weight:600;color:var(--text-2);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.group h3::before{content:"";width:6px;height:6px;border-radius:2px;background:var(--brand)}
+.group h3 small{font-weight:500;color:var(--text-3)}
+.gtiles{display:flex;flex-wrap:wrap}
+.gtiles .tile-wrap{width:112px}
+.group .tile:hover{background:var(--surface)}
+.p-foot{display:flex;border-top:1px solid var(--border);background:var(--surface-2)}
+.p-foot button{flex:1;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:13px}
+.p-foot button+button{border-inline-start:1px solid var(--border)}
+.p-foot .tour .play{width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center}
+.p-foot .tour .play svg{width:10px;height:10px}
+.p-foot .demo{color:var(--brand)}
+.p-foot button:hover{background:var(--surface)}
+
+/* Support */
+.support{margin:36px 0 48px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.support::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+.support .badge{width:44px;height:44px;border-radius:12px;background:#1b2a6b;color:var(--brand-2);display:grid;place-items:center;flex:none}
+.support b{font-size:15px}
+.support p{margin:2px 0 0;color:var(--text-2);font-size:13px}
+.support .btn{margin-inline-start:auto}
+
+/* Search dialog */
+.overlay{position:fixed;inset:0;background:var(--overlay);display:none;align-items:flex-start;justify-content:center;padding:10vh 16px 16px;z-index:50}
+.overlay.open{display:flex}
+.dialog{width:100%;max-width:620px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 24px 60px -12px rgba(0,0,0,.45);overflow:hidden}
+.dlg-in{display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--border)}
+.dlg-in input{flex:1;height:56px;border:0;outline:0;background:transparent;color:var(--text);font:inherit;font-size:16px}
+.dlg-in input::placeholder{color:var(--text-3)}
+.results{max-height:56vh;overflow:auto;padding:8px}
+.grp{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;padding:10px 10px 4px}
+.res{display:flex;align-items:center;gap:12px;width:100%;padding:8px 10px;border:0;background:transparent;border-radius:10px;text-align:start}
+.res .mini{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:#fff;flex:none}
+.res .mini svg{width:16px;height:16px}
+.res .t{flex:1;min-width:0}
+.res .t b{display:block;font-weight:600;font-size:14px}
+.res .t small{color:var(--text-3);font-size:12px}
+.res .tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--lock-bg);color:var(--text-2);white-space:nowrap}
+.res.lockd .mini{background:var(--lock-bg)!important;color:var(--lock-ink)}
+.res.active{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--border-strong)}
+.dlg-foot{display:flex;gap:16px;padding:10px 16px;border-top:1px solid var(--border);color:var(--text-3);font-size:12px;flex-wrap:wrap}
+.noresult{padding:28px;text-align:center;color:var(--text-3)}
+mark{background:rgba(60,200,232,.28);color:inherit;border-radius:3px}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:#14204a;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;box-shadow:0 12px 30px -8px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:all .25s;z-index:60;max-width:calc(100% - 32px)}
+:root[data-theme="dark"] .toast{background:#e9eeff;color:#14204a}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:720px){
+  .topbar .wrap{gap:8px}
+  .searchbtn span:not(.kbd),.searchbtn .kbd{display:none}
+  .searchbtn{flex:0 0 40px;width:40px;padding:0;justify-content:center;margin-inline-start:auto}
+  .welcome{flex-wrap:wrap;padding:20px}
+  .welcome h1{font-size:21px}
+  .tfa{margin-inline-start:0;width:100%}
+  .p-actions{margin-inline-start:0;width:100%;flex-wrap:wrap}
+  .p-actions .btn{width:100%;justify-content:center}
+  .tiles{grid-template-columns:repeat(3,1fr);padding:14px 6px}
+  .tile .ic{width:52px;height:52px}
+  .groups{padding:14px 10px}
+  .group{flex-basis:100%}
+  .gtiles .tile-wrap{width:33.333%}
+  .quick-label{width:100%}
+  .support{flex-wrap:wrap}
+  .support .btn{margin-inline-start:0}
+  .sec-sub{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="logo" aria-label="Qoyod">QOYOD<span class="dot"></span></div>
+    <button class="searchbtn" id="openSearch" aria-label="Search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span data-i18n="searchPh"></span><span class="kbd">Ctrl K</span>
+    </button>
+    <button class="iconbtn" id="langBtn" aria-label="Language">ع</button>
+    <button class="iconbtn" id="themeBtn" aria-label="Theme"></button>
+    <div class="avatar" title="Ehab">EE</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="welcome">
+    <div class="badge"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flip"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg></div>
+    <div>
+      <div class="date" id="today"></div>
+      <h1 id="greet"></h1>
+      <div class="who"><span data-i18n="signedAs"></span> <b>e.esmat@qoyod.com</b></div>
+    </div>
+    <div class="tfa"><span data-i18n="tfa"></span><a href="#" onclick="return false"><span data-i18n="turnOn"></span> →</a></div>
+  </section>
+
+  <h2 class="sec-title"><span data-i18n="quick"></span></h2>
+  <section class="quick">
+    <div class="quick-row"><div class="quick-label" data-i18n="pinned"></div><div class="quick-row" id="pinnedRow"></div></div>
+    <div class="quick-row"><div class="quick-label" data-i18n="recent"></div><div class="quick-row" id="recentRow"></div></div>
+  </section>
+
+  <h2 class="sec-title"><span data-i18n="yourApps"></span><span class="count" id="ownedCount"></span><span class="sec-sub" data-i18n="yourAppsSub"></span></h2>
+  <div id="owned"></div>
+
+  <h2 class="sec-title alt"><span data-i18n="available"></span><span class="sec-sub" data-i18n="availableSub"></span></h2>
+  <div id="available"></div>
+
+  <section class="support">
+    <div class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg></div>
+    <div><b data-i18n="support"></b> <span class="status" data-i18n="availNow"></span><p data-i18n="supportSub"></p></div>
+    <button class="btn btn-ghost" data-i18n="contact"></button>
+  </section>
+</main>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="dialog">
+    <div class="dlg-in">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--text-3)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" autocomplete="off" spellcheck="false">
+      <span class="kbd">Esc</span>
+    </div>
+    <div class="results" id="results"></div>
+    <div class="dlg-foot"><span>↑ ↓ <span data-i18n="navigate"></span></span><span>Enter <span data-i18n="open"></span></span><span>Esc <span data-i18n="close"></span></span></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- Icons (24x24 stroke paths) ---------- */
+const I = {
+  trend:'<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  truck:'<path d="M3 6h11v10H3z"/><path d="M14 9h4l3 3v4h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
+  cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.6 12.4a1.5 1.5 0 0 0 1.5 1.1h8.8a1.5 1.5 0 0 0 1.5-1.2L21 8H6"/>',
+  clipcheck:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2h6v4H9z"/><path d="m9 13 2 2 4-4"/>',
+  receipt:'<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  calc:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>',
+  book:'<path d="M5 4a2 2 0 0 1 2-2h12v18H7a2 2 0 0 0-2 2z"/><path d="M5 20V4M10 2v7l2.5-1.5L15 9V2"/>',
+  kanban:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 7v7M12 7v4M16 7v10"/>',
+  chart:'<path d="M3 3v18h18"/><path d="M8 17v-5M12 17V8M16 17v-8M20 17v-3"/>',
+  network:'<rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="17" width="6" height="5" rx="1"/><rect x="16" y="17" width="6" height="5" rx="1"/><path d="M12 7v5M5 17v-3h14v3"/>',
+  sliders:'<path d="M5 3v18M12 3v18M19 3v18"/><rect x="3" y="7" width="4" height="5" rx="1"/><rect x="10" y="12" width="4" height="5" rx="1"/><rect x="17" y="6" width="4" height="5" rx="1"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a5.5 5.5 0 0 1 3.5 6"/>',
+  wallet:'<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/><path d="M6 6V5a2 2 0 0 1 2-2h9"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="m9 15 2 2 4-4"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  exit:'<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="m9 16-4-4 4-4M5 12h10"/>',
+  sign:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 17c1.5-2 2.5-2 3 0s1.5 1 2.5-.5"/>',
+  usercheck:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 12.5-4.3"/><path d="m16 19 2 2 4-4"/>',
+  funnel:'<path d="M3 4h18l-7 9v6l-4 2v-8z"/>',
+  contact:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 17a3.5 3.5 0 0 1 7 0M15 9h3M15 13h3"/>',
+  handshake:'<path d="m11 17 2 2a1.4 1.4 0 0 0 2-2"/><path d="m14 14 2.5 2.5a1.4 1.4 0 0 0 2-2l-3.9-3.9a2 2 0 0 0-2.8 0l-.9.9a1.4 1.4 0 0 1-2-2l2.8-2.8a4 4 0 0 1 5 -.5l.4.3H21v8"/><path d="M3 5h5l3 3M3 13l6 6 2-2"/>',
+  tasks:'<path d="M10 6h11M10 12h11M10 18h11"/><path d="m3 6 1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17"/>',
+  quote:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
+  megaphone:'<path d="M3 11v3a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 8a5 5 0 0 1 0 8M18 5a9 9 0 0 1 0 14"/>',
+  building:'<rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/>',
+  key:'<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 9.2-9.2M17 6l3 3M14 9l2 2"/>',
+  coins:'<circle cx="9" cy="9" r="6"/><path d="M18.1 10.4A6 6 0 1 1 10.4 18.1M8 7h2v4"/>',
+  bank:'<path d="M3 10h18L12 3z"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>',
+  wrench:'<path d="M14.7 6.3a4 4 0 0 0 5.2 5.2L21 10.4a6 6 0 0 1-7.6 7.6l-4.6 4.6a2.1 2.1 0 0 1-3-3l4.6-4.6A6 6 0 0 1 18 7.4z"/>',
+  vote:'<path d="m9 12 2 2 4-4"/><path d="M5 7h14l2 4v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z"/>',
+  piggy:'<path d="M19 9c1 0 2 .5 2 2v2h-2l-1 3h-2v2h-3v-2H9v2H6v-3a6 6 0 0 1 3-11h4a6 6 0 0 1 5 3z"/><path d="M15 9h.01"/>',
+  inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/>',
+  chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/>',
+  lockcal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15h6"/>',
+  percent:'<path d="M19 5 5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+  statement:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 18v-3M12 18v-6M16 18v-4"/>',
+  hand:'<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.4l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>',
+  qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>',
+  expense:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+  star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  play:'<path d="M7 4v16l13-8z" fill="currentColor" stroke="none"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'
+};
+const svg = (n, extra='') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" ${extra}>${I[n]}</svg>`;
+
+/* Tile palette (matches QEnterprise launcher tones) */
+const C = {blue:'#2563eb',teal:'#0f766e',rust:'#c2410c',violet:'#7c3aed',pink:'#be185d',cyan:'#0e7490',slate:'#475569',green:'#15803d',amber:'#b45309',ocean:'#0369a1',orange:'#ea580c',ink:'#334155',indigo:'#4338ca',rose:'#e11d48',emerald:'#059669',sky:'#0284c7',plum:'#86198f',maroon:'#9f1239'};
+
+/* ---------- Data ---------- */
+const PRODUCTS = [
+  { id:'qoyod', name:'QOYOD', nameAr:'قيود', color:'#1b2a6b', dark:'#dfe6ff', acc:'#3cc8e8', owned:true, last:{en:'today 12:32 PM',ar:'اليوم 12:32 م'},
+    desc:{en:'Accounting, invoicing and financial reports.',ar:'المحاسبة والفوترة والتقارير المالية.'},
+    modules:[
+      ['sales','Sales','المبيعات','trend','blue'],['purchases','Purchases','المشتريات','cart','rust'],
+      ['products','Products','المنتجات','box','cyan'],['accounting','Accounting','المحاسبة','book','green'],
+      ['assets','Fixed Assets','الأصول الثابتة','calc','slate'],['projects','Project & Tasks','المشاريع والمهام','kanban','amber'],
+      ['einvoice','E-Invoicing (ZATCA)','الفوترة الإلكترونية (زاتكا)','qr','teal'],
+      ['reports','Reports','التقارير','chart','ocean'],['settings','Settings','الإعدادات','sliders','ink']]},
+  { id:'qent', name:'QEnterprise', nameAr:'كيو إنتربرايز', color:'#14204a', dark:'#eef2ff', acc:'#0a6cf0', owned:true, last:{en:'yesterday 4:10 PM',ar:'أمس 4:10 م'}, wordmark:true,
+    desc:{en:'ERP for growing businesses.',ar:'نظام تخطيط موارد للشركات النامية.'},
+    groups:[
+      ['trading','Trading Management','إدارة التجارة',[
+        ['sales','Sales','المبيعات','trend','blue'],['delivery','Delivery Management','إدارة التوصيل','truck','teal']]],
+      ['procurement','Procurement Management','إدارة التوريد',[
+        ['purchases','Purchases','المشتريات','cart','rust'],['requisition','Requisition Management','إدارة طلبات الشراء','clipcheck','violet'],
+        ['claims','Expense Claims','مطالبات المصروفات','receipt','pink']]],
+      ['inventory','Inventory Management','إدارة المخزون',[
+        ['inventory','Product Management','إدارة المنتجات','box','cyan']]],
+      ['financial','Financial Management','الإدارة المالية',[
+        ['accounting','Accounting Management','إدارة المحاسبة','book','green'],['assets','Fixed Assets Management','إدارة الأصول الثابتة','calc','slate']]],
+      ['project','Project Management','إدارة المشاريع',[
+        ['projects','Project & Tasks','المشاريع والمهام','kanban','amber']]],
+      ['config','Configuration Management','إدارة التهيئة',[
+        ['approvals','Approval Management','إدارة الموافقات','network','orange'],['settings','Settings','الإعدادات','sliders','ink']]],
+      ['insights','Insights','التحليلات',[
+        ['reports','Reports','التقارير','chart','ocean']]]]},
+  { id:'hr', name:'Q.HR', nameAr:'قيود HR', color:'#0b2a5b', dark:'#cfe0ff', acc:'#0a6cf0', owned:true, last:{en:'3 days ago',ar:'قبل 3 أيام'},
+    desc:{en:'Payroll, leave, and end-of-service under Saudi labor law, posted to your Qoyod books.',ar:'الرواتب والإجازات ونهاية الخدمة وفق نظام العمل السعودي، تُرحّل إلى دفاتر قيود.'},
+    modules:[
+      ['employees','Employees','الموظفون','users','blue'],['payroll','Payroll','الرواتب','wallet','green'],
+      ['leave','Leave','الإجازات','calendar','violet'],['attendance','Attendance','الحضور والانصراف','clock','cyan'],
+      ['eos','End of Service','نهاية الخدمة','exit','rust'],['contracts','Contracts','العقود','sign','slate'],
+      ['ess','Employee Self-Service','الخدمة الذاتية','usercheck','teal'],['reports','Reports','التقارير','chart','ocean']]},
+  { id:'crm', name:'Q.CRM', nameAr:'قيود CRM', color:'#4c1d95', dark:'#c4b5fd', acc:'#a78bfa', owned:false,
+    desc:{en:'Every lead on one tracked path, from the first conversation to a paid invoice.',ar:'كل عميل محتمل على مسار واحد، من أول محادثة حتى الفاتورة المدفوعة.'},
+    modules:[
+      ['leads','Leads','العملاء المحتملون','funnel','violet'],['contacts','Contacts & Companies','جهات الاتصال والشركات','contact','blue'],
+      ['deals','Deals Pipeline','مسار الصفقات','handshake','green'],['activities','Activities & Tasks','الأنشطة والمهام','tasks','amber'],
+      ['quotes','Quotations','عروض الأسعار','quote','cyan'],['campaigns','Campaigns','الحملات','megaphone','pink'],
+      ['reports','Reports','التقارير','chart','ocean']]},
+  { id:'masakin', name:'MASAKIN', nameAr:'مساكن', color:'#7a1530', dark:'#fda4af', acc:'#7a1530', owned:false,
+    desc:{en:'The finance system for owners’ associations, built for property management offices.',ar:'النظام المالي لجمعيات الملاك، مصمم لمكاتب إدارة الأملاك.'},
+    modules:[
+      ['properties','Properties & Units','العقارات والوحدات','building','maroon'],['owners','Owners','الملاك','key','amber'],
+      ['fees','Association Fees','رسوم الجمعية','coins','green'],['collections','Collections','التحصيل','wallet','teal'],
+      ['maintenance','Maintenance Requests','طلبات الصيانة','wrench','rust'],['meetings','Meetings & Voting','الاجتماعات والتصويت','vote','violet'],
+      ['budgets','Budgets','الميزانيات','piggy','pink'],['reports','Reports','التقارير','chart','ocean']]},
+  { id:'bk', name:'Bookkeeping', nameAr:'مسك الدفاتر', color:'#14204a', dark:'#eef2ff', acc:'#f05a28', owned:false,
+    desc:{en:'An accounting team records your transactions as they happen and prepares your VAT return.',ar:'فريق محاسبي يسجل معاملاتك أولاً بأول ويُعدّ إقرارك الضريبي.'},
+    modules:[
+      ['inbox','Document Inbox','صندوق المستندات','inbox','sky'],['chat','Bookkeeper Chat','محادثة المحاسب','chat','violet'],
+      ['close','Monthly Close','الإقفال الشهري','lockcal','slate'],['vat','VAT Return','الإقرار الضريبي','percent','green'],
+      ['statements','Financial Statements','القوائم المالية','statement','ocean'],['requests','Requests','الطلبات','hand','orange']]}
+];
+PRODUCTS.forEach(p => {
+  const mk = (g) => ([id,en,ar,icon,col]) => ({id, key:p.id+':'+id, en, ar, icon, color:C[col], product:p, group:g});
+  if (p.groups){
+    p.groups = p.groups.map(([id,en,ar,mods]) => { const g = {id,en,ar}; g.modules = mods.map(mk(g)); return g; });
+    p.modules = p.groups.flatMap(g => g.modules);
+  } else p.modules = p.modules.map(mk(null));
+});
+const ALL = PRODUCTS.flatMap(p => p.modules);
+const byKey = Object.fromEntries(ALL.map(m => [m.key, m]));
+
+/* ---------- i18n ---------- */
+const T = {
+  en:{searchPh:'Search modules across all Qoyod apps', signedAs:'Signed in as', tfa:'Two-step verification', turnOn:'Turn on',
+      quick:'Quick access', pinned:'Pinned', recent:'Recent', yourApps:'Your apps', yourAppsSub:'Open a module directly, or continue to the app',
+      available:'Available for your company', availableSub:'See what each app includes before you add it',
+      active:'Active', notSubscribed:'Not subscribed', lastSignIn:'Last sign-in', cont:'Continue to', tour:'Quick tour', demo:'Request a demo',
+      support:'Support, 24/7', availNow:'Available now', supportSub:'Our team is here around the clock for any Qoyod product.', contact:'Contact support',
+      navigate:'navigate', open:'open', close:'close', inYour:'Your apps', inAvail:'Available to add', locked:'Request a demo', noRes:'No modules match',
+      noPins:'Hover a module and tap ☆ to pin it here.', noRecent:'Modules you open will show up here.',
+      opening:'Opening', lockedToast:'is not in your plan yet — request a demo to add it.', pinnedT:'Pinned', unpinnedT:'Unpinned', modules:'modules',
+      morning:'Good morning', afternoon:'Good afternoon', evening:'Good evening', pin:'Pin', unpin:'Unpin'},
+  ar:{searchPh:'ابحث في وحدات جميع تطبيقات قيود', signedAs:'مسجّل الدخول باسم', tfa:'التحقق بخطوتين', turnOn:'تفعيل',
+      quick:'وصول سريع', pinned:'المثبّتة', recent:'الأخيرة', yourApps:'تطبيقاتك', yourAppsSub:'افتح الوحدة مباشرة أو انتقل إلى التطبيق',
+      available:'متاحة لشركتك', availableSub:'اطّلع على محتوى كل تطبيق قبل إضافته',
+      active:'نشط', notSubscribed:'غير مشترك', lastSignIn:'آخر دخول', cont:'المتابعة إلى', tour:'جولة سريعة', demo:'اطلب عرضاً تجريبياً',
+      support:'الدعم على مدار الساعة', availNow:'متاح الآن', supportSub:'فريقنا متواجد على مدار الساعة لأي منتج من قيود.', contact:'تواصل مع الدعم',
+      navigate:'للتنقل', open:'للفتح', close:'للإغلاق', inYour:'تطبيقاتك', inAvail:'متاحة للإضافة', locked:'اطلب عرضاً', noRes:'لا توجد وحدات مطابقة',
+      noPins:'مرّر على أي وحدة واضغط ☆ لتثبيتها هنا.', noRecent:'ستظهر هنا الوحدات التي تفتحها.',
+      opening:'جارٍ فتح', lockedToast:'غير مشمول في اشتراكك بعد — اطلب عرضاً تجريبياً لإضافته.', pinnedT:'تم التثبيت', unpinnedT:'تم إلغاء التثبيت', modules:'وحدات',
+      morning:'صباح الخير', afternoon:'مساء الخير', evening:'مساء الخير', pin:'تثبيت', unpin:'إلغاء التثبيت'}
+};
+
+/* ---------- State (localStorage guarded) ---------- */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('qlaunch:'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('qlaunch:'+k, JSON.stringify(v)); }catch(e){} }
+};
+let lang = store.get('lang','en');
+let theme = store.get('theme','light');
+let pins = store.get('pins',['hr:payroll','qent:approvals','qoyod:sales']).filter(k => byKey[k]);
+let recent = store.get('recent',['qent:sales','qoyod:einvoice','hr:leave','qent:inventory']).filter(k => byKey[k]);
+
+const t = k => T[lang][k];
+const mName = m => lang==='ar' ? m.ar : m.en;
+const pName = p => lang==='ar' ? p.nameAr : p.name;
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- Render ---------- */
+function productLogo(p){
+  const style = `--pc:${p.color};--pc-dark:${p.dark};--pacc:${p.acc}`;
+  if (p.wordmark) return `<div class="p-logo" style="${style}">${esc(pName(p))}</div>`;
+  return `<div class="p-logo" style="${style}"><span class="mark"></span>${esc(pName(p))}</div>`;
+}
+function tileHTML(m, locked){
+  const pinned = pins.includes(m.key);
+  return `<div class="tile-wrap" style="position:relative">
+    <button class="tile" data-key="${m.key}" title="${esc(mName(m))}">
+      <span class="ic" style="background:${m.color}">${svg(m.icon)}</span>
+      <span class="nm">${esc(mName(m))}</span>
+      ${locked ? `<span class="lk">${svg('lock','stroke-width="2.4"')}</span>` : ''}
+    </button>
+    ${locked ? '' : `<button class="pin ${pinned?'on':''}" data-pin="${m.key}" aria-label="${pinned?t('unpin'):t('pin')} ${esc(mName(m))}" title="${pinned?t('unpin'):t('pin')}">${svg('star', pinned?'fill="currentColor"':'')}</button>`}
+  </div>`;
+}
+function productHTML(p){
+  const head = p.owned
+    ? `<div class="p-head">${productLogo(p)}
+         <div class="p-meta"><div class="row"><span class="status">${t('active')}</span><span class="last">${p.modules.length} ${t('modules')}</span></div><div class="p-desc">${esc(p.desc[lang])}</div></div>
+         <div class="p-actions"><span class="last">${t('lastSignIn')} ${esc(p.last[lang])}</span>
+           <button class="btn btn-primary" data-continue="${p.id}">${t('cont')} ${esc(pName(p))} ${svg('arrow','class="flip"')}</button></div></div>`
+    : `<div class="p-head">${productLogo(p)}
+         <div class="p-meta"><div class="row"><span class="status off">${t('notSubscribed')}</span><span class="last">${p.modules.length} ${t('modules')}</span></div><div class="p-desc">${esc(p.desc[lang])}</div></div></div>`;
+  const foot = p.owned ? '' :
+    `<div class="p-foot"><button class="tour" data-tour="${p.id}"><span class="play">${svg('play')}</span>${t('tour')}</button>
+       <button class="demo" data-demo="${p.id}">${t('demo')} ${svg('arrow','class="flip" style="width:14px;height:14px"')}</button></div>`;
+  const body = p.groups
+    ? `<div class="groups">${p.groups.map(g => `<div class="group"><h3>${esc(lang==='ar'?g.ar:g.en)} <small>${g.modules.length}</small></h3><div class="gtiles">${g.modules.map(m => tileHTML(m,!p.owned)).join('')}</div></div>`).join('')}</div>`
+    : `<div class="tiles">${p.modules.map(m => tileHTML(m,!p.owned)).join('')}</div>`;
+  return `<section class="product ${p.owned?'':'locked'}">${head}${body}${foot}</section>`;
+}
+function chipHTML(k){
+  const m = byKey[k];
+  return `<button class="chip" data-key="${k}"><span class="mini" style="background:${m.color}">${svg(m.icon)}</span>${esc(mName(m))} <small>· ${esc(pName(m.product))}</small></button>`;
+}
+function renderQuick(){
+  document.getElementById('pinnedRow').innerHTML = pins.length ? pins.map(chipHTML).join('') : `<span class="empty">${t('noPins')}</span>`;
+  document.getElementById('recentRow').innerHTML = recent.length ? recent.map(chipHTML).join('') : `<span class="empty">${t('noRecent')}</span>`;
+}
+function render(){
+  const root = document.documentElement;
+  root.lang = lang; root.dir = lang==='ar' ? 'rtl' : 'ltr'; root.dataset.theme = theme;
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.getElementById('q').placeholder = t('searchPh');
+  document.getElementById('langBtn').textContent = lang==='ar' ? 'EN' : 'ع';
+  document.getElementById('themeBtn').innerHTML = svg(theme==='dark' ? 'sun' : 'moon','width="18" height="18"');
+  const now = new Date(), h = now.getHours();
+  document.getElementById('today').textContent = now.toLocaleDateString(lang==='ar'?'ar-SA-u-ca-gregory-nu-latn':'en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('greet').textContent = `${t(h<12?'morning':h<18?'afternoon':'evening')}${lang==='ar'?'، إيهاب':', Ehab'}`;
+  const owned = PRODUCTS.filter(p => p.owned), avail = PRODUCTS.filter(p => !p.owned);
+  document.getElementById('ownedCount').textContent = owned.length;
+  document.getElementById('owned').innerHTML = owned.map(productHTML).join('');
+  document.getElementById('available').innerHTML = avail.map(productHTML).join('');
+  renderQuick();
+}
+
+/* ---------- Actions ---------- */
+let toastTimer;
+function toast(msg){ const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2600); }
+function openModule(k){
+  const m = byKey[k]; if (!m) return;
+  if (!m.product.owned){ toast(`${pName(m.product)} → ${mName(m)} ${t('lockedToast')}`); return; }
+  recent = [k, ...recent.filter(x => x !== k)].slice(0,6); store.set('recent', recent); renderQuick();
+  toast(`${t('opening')} ${pName(m.product)} → ${mName(m)}`);
+}
+function togglePin(k){
+  const on = pins.includes(k);
+  pins = on ? pins.filter(x => x !== k) : [...pins, k]; store.set('pins', pins);
+  document.querySelectorAll(`[data-pin="${k}"]`).forEach(b => { b.classList.toggle('on', !on); b.innerHTML = svg('star', !on?'fill="currentColor"':''); b.title = !on?t('unpin'):t('pin'); });
+  renderQuick(); toast(`${on?t('unpinnedT'):t('pinnedT')}: ${mName(byKey[k])}`);
+}
+document.addEventListener('click', e => {
+  const pin = e.target.closest('[data-pin]'); if (pin){ togglePin(pin.dataset.pin); return; }
+  const el = e.target.closest('[data-key]'); if (el && !el.closest('#results')){ openModule(el.dataset.key); return; }
+  const c = e.target.closest('[data-continue]'); if (c){ const p = PRODUCTS.find(x => x.id===c.dataset.continue); toast(`${t('opening')} ${pName(p)}`); return; }
+  const d = e.target.closest('[data-demo]'); if (d){ const p = PRODUCTS.find(x => x.id===d.dataset.demo); toast(`${t('demo')} — ${pName(p)}`); return; }
+  const tr = e.target.closest('[data-tour]'); if (tr){ const p = PRODUCTS.find(x => x.id===tr.dataset.tour); toast(`${t('tour')} — ${pName(p)}`); return; }
+});
+document.getElementById('langBtn').onclick = () => { lang = lang==='ar'?'en':'ar'; store.set('lang', lang); render(); };
+document.getElementById('themeBtn').onclick = () => { theme = theme==='dark'?'light':'dark'; store.set('theme', theme); render(); };
+
+/* ---------- Search ---------- */
+const overlay = document.getElementById('overlay'), q = document.getElementById('q'), results = document.getElementById('results');
+let hits = [], sel = 0;
+function norm(s){ return s.toLowerCase().normalize('NFKD').replace(/[ً-ٟ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي'); }
+function hl(text, query){
+  if (!query) return esc(text);
+  const i = norm(text).indexOf(norm(query));
+  return i < 0 ? esc(text) : esc(text.slice(0,i)) + '<mark>' + esc(text.slice(i, i+query.length)) + '</mark>' + esc(text.slice(i+query.length));
+}
+function runSearch(){
+  const query = q.value.trim(), nq = norm(query);
+  let list = !query
+    ? [...pins, ...recent.filter(k => !pins.includes(k))].map(k => byKey[k])
+    : ALL.filter(m => [m.en, m.ar, m.product.name, m.product.nameAr, m.group?.en||'', m.group?.ar||''].some(s => norm(s).includes(nq)))
+         .sort((a,b) => (b.product.owned - a.product.owned) || (norm(mName(a)).indexOf(nq) < 0) - (norm(mName(b)).indexOf(nq) < 0));
+  hits = list.slice(0, 30); sel = 0;
+  if (!hits.length){ results.innerHTML = `<div class="noresult">${t('noRes')} “${esc(query)}”</div>`; return; }
+  let html = '', grp = null;
+  hits.forEach((m, i) => {
+    const g = !query ? t('quick') : (m.product.owned ? t('inYour') : t('inAvail'));
+    if (g !== grp){ html += `<div class="grp">${g}</div>`; grp = g; }
+    html += `<button class="res ${m.product.owned?'':'lockd'} ${i===sel?'active':''}" data-i="${i}">
+      <span class="mini" style="background:${m.color}">${svg(m.product.owned?m.icon:'lock')}</span>
+      <span class="t"><b>${hl(mName(m), query)}</b><small>${hl(pName(m.product), query)}${m.group ? ' · ' + hl(lang==='ar'?m.group.ar:m.group.en, query) : ''}</small></span>
+      ${m.product.owned ? `<span style="color:var(--text-3)">${svg('arrow','class="flip" width="16" height="16"')}</span>` : `<span class="tag">${t('locked')}</span>`}
+    </button>`;
+  });
+  results.innerHTML = html;
+}
+function setSel(i){
+  sel = (i + hits.length) % hits.length;
+  results.querySelectorAll('.res').forEach(r => r.classList.toggle('active', +r.dataset.i === sel));
+  results.querySelector('.res.active')?.scrollIntoView({block:'nearest'});
+}
+function openSearch(){ overlay.classList.add('open'); q.value=''; runSearch(); setTimeout(() => q.focus(), 10); }
+function closeSearch(){ overlay.classList.remove('open'); }
+document.getElementById('openSearch').onclick = openSearch;
+q.addEventListener('input', runSearch);
+results.addEventListener('click', e => { const r = e.target.closest('.res'); if (r){ closeSearch(); openModule(hits[+r.dataset.i].key); } });
+results.addEventListener('mousemove', e => { const r = e.target.closest('.res'); if (r && +r.dataset.i !== sel) setSel(+r.dataset.i); });
+overlay.addEventListener('click', e => { if (e.target === overlay) closeSearch(); });
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); overlay.classList.contains('open') ? closeSearch() : openSearch(); return; }
+  if (!overlay.classList.contains('open')) return;
+  if (e.key === 'Escape'){ closeSearch(); }
+  else if (e.key === 'ArrowDown' && hits.length){ e.preventDefault(); setSel(sel+1); }
+  else if (e.key === 'ArrowUp' && hits.length){ e.preventDefault(); setSel(sel-1); }
+  else if (e.key === 'Enter' && hits[sel]){ e.preventDefault(); closeSearch(); openModule(hits[sel].key); }
+});
+
+render();
+</script>
+</body>
+</html>
